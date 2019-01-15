@@ -1,2 +1,2 @@
 # dualnum
-dual number-based example implementation of tangent linear and adjoint model
+example implementation of dual number-based tangent linear and adjoint models
