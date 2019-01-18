@@ -4,9 +4,6 @@ import modelcomponents
 from dualnum import DualNumber
 import numpy as np
 
-#TODO improve default parameters
-#TODO different ways to handle light 
-
 i_irr = 0
 i_nut = 1
 i_phy = 2
@@ -20,7 +17,7 @@ Methods
 run_nl: 
     Run the nonlinear model.
 run_tl: 
-    Run the tangent linaer model.
+    Run the tangent linear model.
 run_ad: 
     Run the adjoint model.
     '''
@@ -372,15 +369,19 @@ x_tl_history: array
         # n is the number of input variables in ivars_in
         n = len(ivars_in)
 
-        # create a dual number with n dual parts
-        # for now, all dual parts are zero
-        # (np.zeros(n) creates an array with n zeros)
+        # Create a dual number with n dual parts.
+        # For now, all dual parts are zero
+        # (np.zeros(n) creates a NumPy array with n zeros).
+        # For NumPy arrays, operations like +,-,*,/, etc. are
+        # performed element-wise, so no extension to the
+        # DualNumber class is necessary to permit more than
+        # one dual part.
         x_dad = np.array([DualNumber(x,np.zeros(n)) for x in x_nl])
 
-        # set the i-th dual part to one for the dual number 
-        # associated with the i-th input variable
+        # Set the i-th dual part to one for the dual number 
+        # associated with the i-th input variable.
         # example:
-        # for ivars_in = (1,3) and hence n = 2 
+        # For ivars_in = (1,3) and hence n = 2 
         # x_dad is an array of length 4 with the following entries:
         #   x_dad[0] = DualNumber(x_nl[0], np.array([0.0, 0.0]))
         #   x_dad[1] = DualNumber(x_nl[1], np.array([1.0, 0.0]))
@@ -392,16 +393,24 @@ x_tl_history: array
         # call nonlinear function generic_nl with dual number array
         x_dad = generic_nl(x_dad)
         
-
+        # contruct x_ad from the x_dad:
+        # The new entry x_ad[iv_in], associated with the i-th input 
+        # variable, is the scalar product of 
+        # x_dad[:].x_d[i] (the i-th dual part of all 4 dual numbers) 
+        # and the original values in x_ad
+        # (variables that are not input variables, are not modified
+        # in the adjoint model).
         for i, iv_in in enumerate(ivars_in):
             delta_ad = 0.0
             for j in range(4):
                 delta_ad += x_dad[j].x_d[i] * x_ad_orig[j]
-
             x_ad[iv_in] = delta_ad
 
         return x_ad
     
+    # based on self._generic_ad, it is  easy to create the adjoint code 
+    # for each model segment
+
     # for p_growth: light, N, and P act as input
     def p_growth_ad(self, x_nl, x_ad):
         return self._generic_ad(self.p_growth, (i_irr,i_nut,i_phy), x_nl, x_ad)
@@ -457,7 +466,7 @@ x_ad_history: array
         x_ad_history[-1,:] = x_ad_ini
         
         x_ad = x_ad_history[-1,:].copy()
-        
+       
         for t in reversed(range(num_t)):
             # load appropriate nonlinear state
             x_nl = x_nl_history[t,:].copy()
@@ -538,7 +547,4 @@ if __name__=='__main__':
            xlabel='time step', ylabel='variable value')
     
     plt.show()
-    
-    
-    
     
