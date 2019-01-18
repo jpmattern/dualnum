@@ -36,18 +36,17 @@ for num_t in (1,3,10,30,100,300,1000):
     x_tl = np.random.uniform(size=4, low=-1.0, high=1.0)
     x_ad = np.random.uniform(size=4, low=-1.0, high=1.0)
     
-    # TODO reactivate
     # compute the results of tangent linear and adjoint models
-    #res_tl = m.run_tl(npz_ini=npz_ini, x_tl_ini=x_tl, num_t=num_t)[1][-1,:]
-    #res_ad = m.run_ad(npz_ini=npz_ini, x_ad_ini=x_ad, num_t=num_t)[1][0,:]
+    res_tl = m.run_tl(npz_ini=npz_ini, x_tl_ini=x_tl, num_t=num_t)[1][-1,:]
+    res_ad = m.run_ad(npz_ini=npz_ini, x_ad_ini=x_ad, num_t=num_t)[1][0,:]
     
+    '''
     # the following could be used to test an individual model segment
     
     x_nl = np.array((10.,8.,5.,3.))
     res_tl = m.p_growth_tl(x_nl=x_nl.copy(), x_tl=x_tl.copy())
-    x_nl_ref = m.p_growth(x_nl=x_nl.copy())
-    print(x_nl)
-    res_ad = m.p_growth_ad(x_nl=x_nl.copy(), x_ad=x_ad.copy(), x_nl_ref=x_nl_ref)
+    res_ad = m.p_growth_ad(x_nl=x_nl.copy(), x_ad=x_ad.copy())
+    '''
     
     # compute the left and right hand side of the equations above
     res0 = x_ad.dot(res_tl)

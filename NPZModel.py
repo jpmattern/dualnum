@@ -364,27 +364,35 @@ x_tl_history: array
     # A function providing the dual number-based adjoint code for any 
     # nonlinear model segment function (generic_nl).
     # For usage see definitions of p_growth_ad, z_grazing_ad etc. below.
-    def _generic_ad(self, generic_nl, ivars_in, x_nl, x_ad, x_nl_ref):
+    def _generic_ad(self, generic_nl, ivars_in, x_nl, x_ad):
         
-        # Note that nonlinear reference 
-        # solution for the unperturbed 
-        # nonlinear state is provided as 
-        # an input argument here but could 
-        # be computed instead.
-        
-        # create copy of adjoint state
+        # create copy of adjoint state 
         x_ad_orig = x_ad.copy()
         
+        # n is the number of input variables in ivars_in
         n = len(ivars_in)
 
+        # create a dual number with n dual parts
+        # for now, all dual parts are zero
         # (np.zeros(n) creates an array with n zeros)
         x_dad = np.array([DualNumber(x,np.zeros(n)) for x in x_nl])
 
+        # set the i-th dual part to one for the dual number 
+        # associated with the i-th input variable
+        # example:
+        # for ivars_in = (1,3) and hence n = 2 
+        # x_dad is an array of length 4 with the following entries:
+        #   x_dad[0] = DualNumber(x_nl[0], np.array([0.0, 0.0]))
+        #   x_dad[1] = DualNumber(x_nl[1], np.array([1.0, 0.0]))
+        #   x_dad[2] = DualNumber(x_nl[2], np.array([0.0, 0.0]))
+        #   x_dad[3] = DualNumber(x_nl[3], np.array([0.0, 1.0]))
         for i, iv_in in enumerate(ivars_in):
             x_dad[iv_in].x_d[i] = 1.0
 
+        # call nonlinear function generic_nl with dual number array
         x_dad = generic_nl(x_dad)
         
+
         for i, iv_in in enumerate(ivars_in):
             delta_ad = 0.0
             for j in range(4):
@@ -395,20 +403,20 @@ x_tl_history: array
         return x_ad
     
     # for p_growth: light, N, and P act as input
-    def p_growth_ad(self, x_nl, x_ad, x_nl_ref):
-        return self._generic_ad(self.p_growth, (i_irr,i_nut,i_phy), x_nl, x_ad, x_nl_ref)
+    def p_growth_ad(self, x_nl, x_ad):
+        return self._generic_ad(self.p_growth, (i_irr,i_nut,i_phy), x_nl, x_ad)
     
     # for z_grazing: P and Z act as input
-    def z_grazing_ad(self, x_nl, x_ad, x_nl_ref):
-        return self._generic_ad(self.z_grazing, (i_phy,i_zoo), x_nl, x_ad, x_nl_ref)
+    def z_grazing_ad(self, x_nl, x_ad):
+        return self._generic_ad(self.z_grazing, (i_phy,i_zoo), x_nl, x_ad)
     
     # for p_loss: P acts as input
-    def p_loss_ad(self, x_nl, x_ad, x_nl_ref):
-        return self._generic_ad(self.p_loss, (i_phy,), x_nl, x_ad, x_nl_ref)
+    def p_loss_ad(self, x_nl, x_ad):
+        return self._generic_ad(self.p_loss, (i_phy,), x_nl, x_ad)
     
     # for z_loss: Z acts as input
-    def z_loss_ad(self, x_nl, x_ad, x_nl_ref):
-        return self._generic_ad(self.z_loss, (i_zoo,), x_nl, x_ad, x_nl_ref)
+    def z_loss_ad(self, x_nl, x_ad):
+        return self._generic_ad(self.z_loss, (i_zoo,), x_nl, x_ad)
     
     def run_ad(self, npz_ini, x_ad_ini, num_t=None, x_nl_history=None):
         '''Run the dual number-based adjoint model.
@@ -483,16 +491,16 @@ x_ad_history: array
             # segment (3rd input argument).
             
             # segment: Z loss
-            x_ad = self.z_loss_ad(x_nl_z_loss, x_ad, x_nl)
+            x_ad = self.z_loss_ad(x_nl_z_loss, x_ad)
             
             # segment: P loss
-            x_ad = self.p_loss_ad(x_nl_p_loss, x_ad, x_nl_z_loss)
+            x_ad = self.p_loss_ad(x_nl_p_loss, x_ad)
             
             # segment: Z grazing
-            x_ad = self.z_grazing_ad(x_nl_z_grazing, x_ad, x_nl_p_loss)
+            x_ad = self.z_grazing_ad(x_nl_z_grazing, x_ad)
             
             # segment: P growth
-            x_ad = self.p_growth_ad(x_nl_p_growth, x_ad, x_nl_z_grazing)
+            x_ad = self.p_growth_ad(x_nl_p_growth, x_ad)
             
             # record history
             x_ad_history[t,:] = x_ad
