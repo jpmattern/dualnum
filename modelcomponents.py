@@ -4,18 +4,18 @@ import numpy as np
 
 #
 # The parameters used in the functions below.
-# 
+#
 
 standard_parameters = {
-    # baseline irradiance parameter 
+    # baseline irradiance parameter
     'irr0':5.0,
     # maximum rate in Michaelis Menten formulation
     'Vmax':10.0,
     # nutrient half saturation in Michaelis Menten formulation
     'nuthalfsat':0.5,
-    # multiplicative grazing parameter 
+    # multiplicative grazing parameter
     'grazphy':0.25,
-    # grazing parameter used in exponential functions 
+    # grazing parameter used in exponential functions
     'grazlambda':0.5,
     # maximum grazing rate
     'grazmax':0.25,
@@ -24,6 +24,7 @@ standard_parameters = {
     # zooplankton mortality rate
     'mort_zoo':0.1,
     }
+
 #
 # A selection of light response functions. Compare Table 1 in Franks (2002).
 #
@@ -85,7 +86,7 @@ def zooplanktonloss_quadratic(zoo, parameters):
     return parameters['mort_zoo']*zoo
 
 #
-# A generic function that can be used in place of any of the above in order to 
+# A generic function that can be used in place of any of the above in order to
 # "switch off" a given segment. Using generic_nomod as the zooplankton grazing
 # function, for example, will turn zooplankton grazing to zero.
 #

@@ -11,18 +11,18 @@ i_zoo = 3
 
 class NPZModel(object):
     ''' A simple NPZ model formulation containing tangent linear and adjoint code.
-    
+
 Methods
 -------
-run_nl: 
+run_nl:
     Run the nonlinear model.
-run_tl: 
+run_tl:
     Run the tangent linear model.
-run_ad: 
+run_ad:
     Run the adjoint model.
     '''
     def __init__(self, delta_t=0.01, lightparameters=None,
-                 lightresponse=None, nutrientuptake=None, grazing=None, 
+                 lightresponse=None, nutrientuptake=None, grazing=None,
                  phytoplanktonloss=None, zooplanktonloss=None, **parameters):
         '''Initialize an NPZ model.
 
@@ -30,10 +30,10 @@ Parameters
 ----------
 delta_t: float, optional
     The length of a model time step.
-    
-lightparameters: dict, optional 
+
+lightparameters: dict, optional
     A dict containing the parameters for a light parametrization.
-    Valid options: 
+    Valid options:
     constant light: {'type':'const', 'value':<constant light value>}
     sinusiodal: {'type':'sinusoidal', 'min':<minimum light value>,
                  'max':<maximum light value>,
@@ -43,7 +43,7 @@ lightresponse: function, optional
 nutrientuptake: function, optional
     A nutrient uptake function (see examples in modelcomponents.py).
 grazing: function, optional
-    A zooplankton grazing on phytoplankton function (see examples in 
+    A zooplankton grazing on phytoplankton function (see examples in
     modelcomponents.py).
 phytoplanktonloss: function, optional
     A phytoplankton loss function (see examples in modelcomponents.py).
@@ -96,7 +96,7 @@ zooplanktonloss: function, optional
     
     def __str__(self):
         return '''NPZModel
-     lightresponse: "{}"        
+     lightresponse: "{}"
     nutrientuptake: "{}"
            grazing: "{}"
  phytoplanktonloss: "{}"
@@ -109,7 +109,7 @@ zooplanktonloss: function, optional
 
     def __repr__(self):
         return '''NPZModel(delta_t={},
-         lightresponse={},        
+         lightresponse={},
          nutrientuptake={},
          grazing={},
          phytoplanktonloss={},
@@ -120,7 +120,7 @@ zooplanktonloss: function, optional
            self.grazing.__name__,
            self.phytoplanktonloss.__name__,
            self.zooplanktonloss.__name__)
-        
+    
     def generate_light(self, num_t):
         if self.lightparameters['type'] == 'const':
             light = np.full(shape=num_t, fill_value=self.lightparameters['value'])
@@ -136,7 +136,7 @@ zooplanktonloss: function, optional
     #
     # the nonlinear (nl) code
     #
-        
+    
     def p_growth(self, x_nl):
         #
         # a phytoplankton response to light
@@ -227,7 +227,7 @@ x_nl_history: array
             self.z_grazing(x_nl)
             self.p_loss(x_nl)
             self.z_loss(x_nl)
-   
+            
             # obtain light
             x_nl[i_irr] = light[t+1]
             
@@ -283,7 +283,7 @@ x_nl_history: array
     def z_loss_tl(self, x_nl, x_tl):
         return self._generic_tl(self.z_loss, x_nl, x_tl)
         
-    def run_tl(self, npz_ini, x_tl_ini, num_t):        
+    def run_tl(self, npz_ini, x_tl_ini, num_t):
         '''Run the dual number-based tangent linear model.
 
 Parameters
@@ -291,7 +291,7 @@ Parameters
 npz_ini: array-like
     The initial conditions for nutrients, phytoplankton, and zooplankton.
 x_tl_ini: array-like
-    The initial conditions for the tangent linear model (including light, 
+    The initial conditions for the tangent linear model (including light,
     nutrients, phytoplankton, and zooplankton).
 num_t: int
     The number of time steps to run the model for.
@@ -378,7 +378,7 @@ x_tl_history: array
         # one dual part.
         x_dad = np.array([DualNumber(x,np.zeros(n)) for x in x_nl])
 
-        # Set the i-th dual part to one for the dual number 
+        # Set the i-th dual part to 1.0 for the dual number 
         # associated with the i-th input variable.
         # example:
         # For ivars_in = (1,3) and hence n = 2 

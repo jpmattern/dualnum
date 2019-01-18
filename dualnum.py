@@ -7,7 +7,7 @@ class DualNumber(object):
     def __init__(self,x=0.0,x_d=0.0):
         self.x = x
         self.x_d = x_d
-        
+    
     def __repr__(self):
         return 'DualNumber({},{})'.format(self.x,self.x_d)
     
@@ -18,7 +18,7 @@ class DualNumber(object):
         if isinstance(other,DualNumber):
             return DualNumber(self.x + other.x, self.x_d + other.x_d)
         return DualNumber(self.x + other, self.x_d)
-      
+    
     # other + self
     def __radd__(self,other):
         return self.__add__(other)
@@ -28,7 +28,7 @@ class DualNumber(object):
         if isinstance(other,DualNumber):
             return DualNumber(self.x - other.x, self.x_d - other.x_d)
         return DualNumber(self.x - other, self.x_d)
-      
+    
     # other - self
     def __rsub__(self,other):
         if isinstance(other,DualNumber):
@@ -77,7 +77,7 @@ class DualNumber(object):
         if isinstance(other,DualNumber):
             return self.x < other.x
         return self.x < other
-   
+    
     # overload some mathematical functions
 
     def exp(self):
@@ -85,11 +85,11 @@ class DualNumber(object):
         return DualNumber(tmp, tmp*self.x_d)
     
 if __name__=='__main__':
-    d = DualNumber(3.,4.)
+    # example:
     
     def f(x):
         return 2*(x-1)**2 + 3
-       
+     
     x = DualNumber(4,1)
     print('f({}) = {}'.format(x,f(x)))
     
