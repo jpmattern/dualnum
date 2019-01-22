@@ -14,16 +14,17 @@ It follows that
 
     x_ad^T * M_tl(x_tl) = M_ad(x_ad)^T * x_tl
     
-where M_tl and M_ad are the tangent linear and adjoint models, respectively.
-The difference between the left and right hand side of the above equation acts 
-as an indicator of the consistency between the two models.
+where M_tl and M_ad are the tangent linear and adjoint models, respectively
+("^T" denotes transpose). The difference between the left and right hand 
+side of the above equation acts as an indicator of the consistency between 
+the two models.
 
-In the code below, the dot-product test is applied to the FDA-based tangent 
-linear and adjoint models.
+In the code below, the dot-product test is applied to the dual number-based 
+tangent linear and adjoint models.
 '''
 
 import numpy as np
-from NPZModel import NPZModel
+from npzmodel import NPZModel
 
 # create model and initial conditions
 m = NPZModel()
