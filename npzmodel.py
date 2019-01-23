@@ -10,7 +10,8 @@ i_phy = 2
 i_zoo = 3
 
 class NPZModel(object):
-    ''' A simple NPZ model formulation containing tangent linear and adjoint code.
+    ''' A simple NPZ model formulation containing tangent linear and adjoint 
+code.
 
 Methods
 -------
@@ -80,17 +81,19 @@ zooplanktonloss: function, optional
         
         # set lightparameters
         if lightparameters is None:
-            self.lightparameters = {'type':'sinusoidal',
-                                    'min':0.5*self.parameters['irr0'],
-                                    'max':1.5*self.parameters['irr0'],
-                                    'wavelength':250.0*self.delta_t,
-                                    }
+            self.lightparameters = {
+                'type':'sinusoidal',
+                'min':0.5*self.parameters['irr0'],
+                'max':1.5*self.parameters['irr0'],
+                'wavelength':250.0*self.delta_t,
+            }
         else:
             self.lightparameters = lightparameters
         # test lightparameters briefly
         self.generate_light(num_t=5)
         
-        # the stepsize h for the dual number-based tangent linear and adjoint models
+        # the stepsize h for the dual number-based tangent linear and 
+        # adjoint models
         self.h_tl = 1e-6
         self.h_ad = 1e-6
     
@@ -123,7 +126,8 @@ zooplanktonloss: function, optional
     
     def generate_light(self, num_t):
         if self.lightparameters['type'] == 'const':
-            light = np.full(shape=num_t, fill_value=self.lightparameters['value'])
+            light = np.full(shape=num_t, 
+                fill_value=self.lightparameters['value'])
         elif self.lightparameters['type'] == 'sinusoidal':
             light = np.sin(np.arange(num_t)*(self.delta_t*2.*np.pi/self.lightparameters['wavelength']))
             light = (light+1.0)*(0.5*(self.lightparameters['max']-self.lightparameters['min']))+self.lightparameters['min']
@@ -142,8 +146,10 @@ zooplanktonloss: function, optional
         # a phytoplankton response to light
         # and nutrient uptake formulation
         #
-        growth  = self.lightresponse(irr=x_nl[i_irr], parameters=self.parameters)
-        growth *= self.nutrientuptake(nut=x_nl[i_nut], parameters=self.parameters)
+        growth  = self.lightresponse(irr=x_nl[i_irr], 
+            parameters=self.parameters)
+        growth *= self.nutrientuptake(nut=x_nl[i_nut], 
+            parameters=self.parameters)
         growth *= x_nl[i_phy]
         
         # apply growth to nutrients and phytoplankton
@@ -171,7 +177,8 @@ zooplanktonloss: function, optional
         # a phytoplankton loss formulation
         #
         
-        loss  = self.phytoplanktonloss(phy=x_nl[i_phy], parameters=self.parameters)
+        loss  = self.phytoplanktonloss(phy=x_nl[i_phy], 
+            parameters=self.parameters)
         loss *= x_nl[i_phy]
         
         # apply loss to phytoplankton and nutrients
@@ -184,7 +191,8 @@ zooplanktonloss: function, optional
         #
         # a zooplankton loss formulation
         #
-        loss  = self.zooplanktonloss(zoo=x_nl[i_zoo], parameters=self.parameters)
+        loss  = self.zooplanktonloss(zoo=x_nl[i_zoo], 
+            parameters=self.parameters)
         loss *= x_nl[i_zoo]
         
         # apply loss to zooplankton and nutrients
@@ -240,8 +248,8 @@ x_nl_history: array
     # the dual number-based tangent linear (tl) code
     #
     
-    # the dual number-based tangent linear phytoplankton growth function is written out 
-    # explicitly, all others use the _generic_tl function below
+    # The dual number-based tangent linear phytoplankton growth function is 
+    # written out explicitly, all others use the _generic_tl function below.
     def p_growth_tl(self, x_nl, x_tl):
         
         # create a dual number array
@@ -531,7 +539,8 @@ if __name__=='__main__':
     
     # plot tl
     
-    x_nl, x_tl = m.run_tl(npz_ini=(10.,5.,5.), x_tl_ini=(1.0,1.0,0.2,0.2), num_t=500)
+    x_nl, x_tl = m.run_tl(npz_ini=(10.,5.,5.), 
+                          x_tl_ini=(1.0,1.0,0.2,0.2), num_t=500)
         
     colors = ('C0','C1','C2','C3')
     
